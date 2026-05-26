@@ -1,9 +1,11 @@
 import pandas as pd
 import os
+from utils.file_operations import FileOperations
 
 class HotelSystem:
     def __init__(self, room = None):
         self.room = room
+        self.room_file_path = 'data/rooms.xlsx'
         self.customers = []
         self.reservations = []
 
@@ -39,4 +41,21 @@ class HotelSystem:
 
     # list rooms available
     def list_all_rooms(self):
-       pass
+       room_list = FileOperations.read_file(self.room_file_path)
+       print('Available Rooms\n', room_list)
+
+    # search room based on user input
+    def search_room(self, user_input):
+        results = FileOperations.search_file(self.room_file_path)
+        # Search for Room ID, Room Type and Room Number
+        formatted_results = results[
+            results['Room ID'].astype(str).str.contains(user_input, case=False) |
+            results['Room Type'].astype(str).str.contains(user_input, case=False) |
+            results['Room Number'].astype(str).str.contains(user_input, case=False)
+        ]
+
+        if formatted_results.empty:
+            print(f'\nSorry! No rooms found for "{user_input}".\n')
+            return None
+
+        print('RESULTS\n', formatted_results)
