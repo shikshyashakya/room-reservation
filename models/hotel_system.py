@@ -42,7 +42,8 @@ class HotelSystem:
     # list rooms available
     def list_all_rooms(self):
        room_list = FileOperations.read_file(self.room_file_path)
-       print('Available Rooms\n', room_list)
+       if len(room_list) > 0:
+        print('Available Rooms:\n', room_list)
 
     # search room based on user input
     def search_room(self, user_input):
@@ -58,4 +59,4 @@ class HotelSystem:
             print(f'\nSorry! No rooms found for "{user_input}".\n')
             return None
 
-        print('RESULTS\n', formatted_results)
+        print('Searched results:\n', formatted_results)

@@ -7,7 +7,7 @@ class FileOperations:
         # Check if file exists
         if not os.path.exists(file_path):
             print('No rooms found.')
-            return None
+            return []
 
         # Read excel file
         data = pd.read_excel(file_path)
@@ -15,7 +15,7 @@ class FileOperations:
         # Check if file is empty
         if data.empty:
             print('No rooms found.')
-            return None
+            return []
         
         return data
     
