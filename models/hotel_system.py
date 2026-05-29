@@ -4,6 +4,10 @@ from utils.file_operations import FileOperations
 from datetime import datetime
 from models.guest import Guest
 from models.room import Room
+from models.reservation import Reservation
+
+SERVICES = ["Breakfast", "Airpot transfer", "Parking Slot", "Laundry Service", "Spa Access"]
+
 
 class HotelSystem:
     def __init__(self, room = None):
@@ -82,3 +86,75 @@ class HotelSystem:
                     return False # overlap found
         
         return True
+    
+    def _all_reservations(self):
+        return [r for guest in self.guests for r in guest.bookings]
+    
+    def _find_guest_by_id(self, guest_id):
+        return next((g for g in self.guests if g.guest == guest_id), None)
+    
+
+    def make_reservation(self):
+        print("\nMake a reservation\n")
+        guest_id = input("Guest Id: ").strip()
+        name = input("Name: ").strip()
+
+        guest = self._find_guest_by_id(guest_id)
+        if not guest:
+            guest = Guest(guest_id, name, "")
+            self.guests.append(guest)
+        
+        rooms = FileOperations.read_file(self.room_file_path)
+        available = rooms[rooms['Status'].str.lower() == 'available']
+        
+        if available.empty:
+            print('\n  No rooms available.\n')
+            return
+        
+        print('\n  Available rooms:')
+        print(available[['Room Number', 'Room Type', 'Price', 'Capacity']].to_string(index=False))
+ 
+        room_number = input('\n  Room number: ').strip()
+        
+        match = rooms[rooms['Room Number'].astype(str).str.lower() == room_number.lower()]
+        if match.empty or match.iloc[0]['Status'].lower() != 'available':
+            print('\n  Room not available.\n')
+            return
+        
+        nightly_rate = float(match.iloc[0]['Price'])
+        capacity = int(match.iloc[0]['Capacity'])
+        room_obj = Room(None, room_number, match.iloc[0]['Room Type'], nightly_rate, 'Occupied', capacity)
+ 
+        check_in_date = input('  Check-in date  (YYYY-MM-DD) : ').strip()
+        check_out     = input('  Check-out date (YYYY-MM-DD) : ').strip()
+ 
+        if not self.validate_no_overlap(room_number, check_in_date, check_out):
+            print('\n  Room already booked for those dates.\n')
+            return
+        
+
+        # optional services, services are not defined yet, just keeping it here as placeholder for later
+        print('\n  Optional services ($500/service/night):')
+        for i, s in enumerate(SERVICES, 1):
+            print(f'    {i}. {s}')
+        print('    0. Skip')
+        picks = input('  Select (e.g. 1 3) or 0: ').strip().split()
+        services = []
+        for p in picks:
+            if p == '0': break
+            try:
+                idx = int(p) - 1
+                if 0 <= idx < len(SERVICES):
+                    services.append(SERVICES[idx])
+            except ValueError:
+                pass
+
+        res_id = f'R{1000 + len(self._all_reservations()) + 1}'
+        reservation = Reservation(res_id, guest_id, room_obj, check_in_date, check_out, services)
+        guest.make_booking(reservation)
+ 
+        rooms.loc[rooms['Room Number'].astype(str).str.lower() == room_number.lower(), 'Status'] = 'Occupied'
+        rooms.to_excel(self.room_file_path, index=False)
+ 
+        print('\n  Reservation confirmed!')
+        reservation.generate_summary()
