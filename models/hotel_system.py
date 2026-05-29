@@ -1,13 +1,15 @@
 import pandas as pd
 import os
 from utils.file_operations import FileOperations
+from datetime import datetime
+from models.guest import Guest
+from models.room import Room
 
 class HotelSystem:
     def __init__(self, room = None):
         self.room = room
         self.room_file_path = 'data/rooms.xlsx'
-        self.customers = []
-        self.reservations = []
+        self.guests = [] # reservations live on guest now 
 
     # TODO: preload data here
 
@@ -60,3 +62,23 @@ class HotelSystem:
             return None
 
         print('Searched results:\n', formatted_results)
+
+    
+    def validate_no_overlap(self, room_number, check_in, check_out):
+        fmt = "%Y-%m-%d"
+        new_in = datetime.strptime(check_in,fmt)
+        new_out = datetime.strptime(check_out, fmt)
+
+        for guest in self.guests:
+            for res in guest.bookings:
+                if res.room.room_number.lower() != room_number.lower():
+                    continue
+                if res.status == "Checked Out": # if they checked out, this needs work
+                    continue
+                ex_in = datetime.strptime(res.check_in, fmt)
+                ex_out = datetime.strptime(res.check_out, fmt)
+                
+                if new_in < ex_out and new_out > ex_in:
+                    return False # overlap found
+        
+        return True
