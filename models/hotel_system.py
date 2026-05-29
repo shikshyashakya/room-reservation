@@ -101,7 +101,7 @@ class HotelSystem:
             for res in guest.bookings:
                 if res.room.room_number.lower() != room_number.lower():
                     continue
-                if res.status == "Checked Out": # if they checked out, this needs work
+                if res.status in  ("Checked Out", "Cancelled"):
                     continue
                 ex_in = datetime.strptime(res.check_in, fmt)
                 ex_out = datetime.strptime(res.check_out, fmt)
