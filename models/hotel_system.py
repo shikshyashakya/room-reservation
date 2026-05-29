@@ -210,7 +210,7 @@ class HotelSystem:
     def modify_booking(self):
         print('\n Modify Booking')
         res_id = input('  Reservation ID: ').strip()
-        res = next((r for r in self._all_reservations() if r.reservation_id == res_id), None)
+        res = next((r for r in self._all_reservations() if r.reservation_id == res_id and r.status != "Checked Out"), None)
         
         if not res:
             print('\n  Reservation not found.\n')
@@ -218,14 +218,13 @@ class HotelSystem:
  
         res.generate_summary()
         print('\n  What to modify?')
-        print('  1. Check-in time')
+        print('  1. Check-in date')
         print('  2. Change room')
         choice = input('  Choice: ').strip()
  
         if choice == '1':
-            new_time = input('  New check-in time (HH:MM): ').strip()
-            date_part = res.check_in.split()[0]
-            res.check_in = f'{date_part} {new_time}'
+            new_date = input("New check-in date (YYYY-MM-DD): ").strip()
+            res.check_in = new_date
             print('\n  Check-in time updated.')
  
         elif choice == '2':
