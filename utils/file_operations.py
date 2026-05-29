@@ -7,7 +7,7 @@ class FileOperations:
         # Check if file exists
         if not os.path.exists(file_path):
             print('No rooms found.')
-            return []
+            return pd.DataFrame()
 
         # Read excel file
         data = pd.read_excel(file_path)
@@ -15,7 +15,7 @@ class FileOperations:
         # Check if file is empty
         if data.empty:
             print('No rooms found.')
-            return []
+            return pd.DataFrame()
         
         return data
     
@@ -26,7 +26,7 @@ class FileOperations:
         '''Search across multiple columns'''
         data = FileOperations.read_file(file_path)
 
-        if data is None:
-            return None
+        if data.empty:
+            return pd.DataFrame()
 
         return data
