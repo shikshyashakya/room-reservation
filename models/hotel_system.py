@@ -17,8 +17,8 @@ class HotelSystem:
         self.guests = [] # reservations live on guest now 
         self._preload_data()
 
-    # create data folder if it doesn't exist, to save rooms data
-    os.makedirs('data', exist_ok=True)
+        # create data folder if it doesn't exist, to save rooms data
+        os.makedirs('data', exist_ok=True)
         
 
     def _preload_data(self):
