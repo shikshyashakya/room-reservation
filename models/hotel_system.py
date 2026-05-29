@@ -37,7 +37,7 @@ class HotelSystem:
             res  = Reservation(str(row['Reservation ID']), guest_id, room_obj,
                                str(row['Check In']), str(row['Check Out']), svcs)
             res.status       = str(row['Status'])
-            res.total_charge = float(row['Total Charge'])
+
             # find existing guest or create one
             guest = self._find_guest_by_id(guest_id)
             if not guest:
