@@ -180,6 +180,7 @@ class HotelSystem:
  
         print('\n  Reservation confirmed!')
         reservation.generate_summary()
+        self._save_bookings()
 
     
     def modify_booking(self):
@@ -240,6 +241,7 @@ class HotelSystem:
  
         print('\n  Updated reservation:')
         res.generate_summary()
+        self._save_bookings
 
 
     def check_out(self):
@@ -259,4 +261,5 @@ class HotelSystem:
  
         print('\n  Final bill:')
         res.generate_summary()
+        self._save_bookings
         print('\n  Thank you for your stay!\n')
