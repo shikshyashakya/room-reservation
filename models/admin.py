@@ -14,7 +14,7 @@ class Admin(User):
         capacity = int(input('Enter room capacity: '))
         
         # create new room object with user input
-        new_room = Room(room_id, room_name, room_type, price, 'Active', capacity)
+        new_room = Room(room_id, room_name, room_type, price, 'Available', capacity)
 
         # create new hotel_system object to add room in a system
         new_system = HotelSystem(new_room)

@@ -12,24 +12,37 @@ class Main:
             print('2. Create Reservation')
             print('3. Check Out')
             print('4. View Reservation')
-            print('5. Access Admin Actions')
-            print('6. List all rooms')
-            print('7. Exit')
+            print('5. Modify Bookings')
+            print('6. Access Admin Actions')
+            print('7. List all rooms')
+            print('8. Exit')
 
             choice = input('Enter your choice: ').strip()
             match choice:
                 case '1':
                     self.search_rooms()
 
+                case '2':
+                    self.hotel_system.make_reservation()
+
+                case '3':
+                    self.hotel_system.check_out()
+
+                case '4':
+                    self.view_reservation()
+
                 case '5':
+                    self.hotel_system.modify_booking()
+
+                case '6':
                     # admin_id = int(print('Enter admin id: '))
                     # id(admin_id)
                     self.admin_options()
 
-                case '6':
+                case '7':
                     self.list_rooms()
                 
-                case '7':
+                case '8':
                     print('Thank you. Have a great day.\n')
                     break
 
@@ -68,6 +81,15 @@ class Main:
             return
         
         self.hotel_system.search_room(search_input)
+
+    
+    def view_reservation(self):
+        res_id = input('  Reservation ID: ').strip()
+        res = next((r for r in self.hotel_system._all_reservations() if r.reservation_id == res_id and r.status != "Checked Out"), None)
+        if not res:
+            print('\n  Reservation not found.\n')
+            return
+        res.generate_summary()
 
 if __name__ == '__main__':
     Main()
