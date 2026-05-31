@@ -53,21 +53,20 @@ class Main:
         print('-----Admin Actions-----')
         print('1. Add Room')
         print('2. Remove Room')
-        print('3. Update Room Status')
+        print('3. Update Room')
         print('4. Exit')
         print('-----------')
 
         admin_choice = input('Enter admin option: ').strip()
+        admin = Admin()
         if(admin_choice == '1'):
-            admin = Admin()
             admin.add_rooms()
         
         elif(admin_choice == '2'):
-            pass
+            admin.remove_room()
 
         elif(admin_choice == '3'):
-            admin = Admin()
-            admin.update_room_status()
+            admin.update_room()
 
         else:
             print('Redirecting to main options\n')
