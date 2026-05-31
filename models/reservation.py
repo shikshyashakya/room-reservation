@@ -13,8 +13,8 @@ class Reservation:
 
     
     def _nights(self):
-        ci = datetime.strptime(self.check_in, '%Y-%m-%d')
-        co = datetime.strptime(self.check_out, '%Y-%m-%d')
+        ci = datetime.strptime(self.check_in.split()[0], '%Y-%m-%d')
+        co = datetime.strptime(self.check_out.split()[0], '%Y-%m-%d')
         return max(1, (co - ci).days)
     
  

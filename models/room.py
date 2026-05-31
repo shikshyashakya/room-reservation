@@ -21,5 +21,5 @@ class Room:
     def is_available(self):
         return self.status.lower() == "available"
     
-    def calculate_fee(self, nights):
+    def calculate_fee(self, nights: int) -> float:
         return self.nightly_rate * nights
