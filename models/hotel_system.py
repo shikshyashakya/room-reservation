@@ -5,6 +5,7 @@ from datetime import datetime
 from models.guest import Guest
 from models.room import Room
 from models.reservation import Reservation
+from enums.room_status import RoomStatus
 
 SERVICES = ["Breakfast", "Airpot transfer", "Parking Slot", "Laundry Service", "Spa Access"]
 
@@ -47,7 +48,6 @@ class HotelSystem:
     
     # add room
     def add_rooms(self):
-        # TODO: check for same room id already exists
         formatted_room = {
             'Room ID': [self.room.room_id],
             'Room Number': [self.room.room_number],
@@ -59,12 +59,16 @@ class HotelSystem:
         new_row = pd.DataFrame(formatted_room)
 
         # check if file already exists, if yes append
-        if os.path.exists('data/rooms.xlsx'):
-            existing_data = pd.read_excel('data/rooms.xlsx')
+        if os.path.exists(self.room_file_path):
+            existing_data = pd.read_excel(self.room_file_path)
+            # check for same room id already exists
+            if self.room.room_id in existing_data['Room ID'].values:
+                print("Room ID already exists.")
+                return
             updated_data = pd.concat([existing_data, new_row], ignore_index=True)  # append
-            updated_data.to_excel('data/rooms.xlsx', index=False)
+            updated_data.to_excel(self.room_file_path, index=False)
         else: # else, create a new file
-            new_row.to_excel('data/rooms.xlsx', index=False)
+            new_row.to_excel(self.room_file_path, index=False)
 
         print(f'Room {self.room.room_id} saved successfully.')
 
@@ -76,17 +80,24 @@ class HotelSystem:
         print('Available Rooms:\n', room_list)
 
     # search room based on user input
-    def search_room(self, user_input):
+    def search_room(self, room_type, minimum_price, maximum_price, capacity):
         results = FileOperations.search_file(self.room_file_path)
-        # Search for Room ID, Room Type and Room Number
+        # check if file exists before search to prevent project crashing
+        if results.empty:
+            print('No room available in the system. \n')
+            return None
+        print(RoomStatus.AVAILABLE.value)
+
+        # Search for Room ID, Capacity, Room Number and only Available rooms
         formatted_results = results[
-            results['Room ID'].astype(str).str.contains(user_input, case=False) |
-            results['Room Type'].astype(str).str.contains(user_input, case=False) |
-            results['Room Number'].astype(str).str.contains(user_input, case=False)
+            (results['Status'] == RoomStatus.AVAILABLE.value) &
+            (results['Room Type'].astype(str).str.contains(room_type, case=False)) &
+            (results['Capacity'] == capacity) &
+            (results['Price'] >= minimum_price) & (results['Price'] <= maximum_price)
         ]
 
         if formatted_results.empty:
-            print(f'\nSorry! No rooms found for "{user_input}".\n')
+            print('\nSorry! No matching rooms found for your request".\n')
             return None
 
         print('Searched results:\n', formatted_results)

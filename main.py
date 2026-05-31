@@ -53,7 +53,8 @@ class Main:
         print('-----Admin Actions-----')
         print('1. Add Room')
         print('2. Remove Room')
-        print('3. Exit')
+        print('3. Update Room Status')
+        print('4. Exit')
         print('-----------')
 
         admin_choice = input('Enter admin option: ').strip()
@@ -64,6 +65,10 @@ class Main:
         elif(admin_choice == '2'):
             pass
 
+        elif(admin_choice == '3'):
+            admin = Admin()
+            admin.update_room_status()
+
         else:
             print('Redirecting to main options\n')
 
@@ -72,16 +77,23 @@ class Main:
         self.hotel_system.list_all_rooms()
 
     def search_rooms(self):
-        print('-----SEARCH ROOM-----')
-        print('You can search either by Room Id, Type or Name')
-        search_input = input('Enter your search: ').strip()
+        try:
+            print('-----SEARCH ROOM-----')
+            room_type = input('Enter room type: ').strip()
+            minimum_price = float(input('Enter minimum price: '))
+            maximum_price = float(input('Enter maximum price: '))
+            capacity = float(input('Enter occupancy capacity: '))
 
-        if not search_input:
-            print('Not acceptable! Please enter a valid search term.')
-            return
-        
-        self.hotel_system.search_room(search_input)
-
+            # check for price range validation
+            if minimum_price > maximum_price:
+                print(
+                    '\nMinimum price cannot exceed maximum price.\n'
+                )
+                return
+            
+            self.hotel_system.search_room(room_type, minimum_price, maximum_price, capacity)
+        except ValueError:
+            print('\nInvalid input type. Please enter valid number as requested.\n')
     
     def view_reservation(self):
         res_id = input('  Reservation ID: ').strip()
